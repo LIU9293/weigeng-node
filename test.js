@@ -1,5 +1,5 @@
-const WeigenController = require('./controller')
+const WeigengController = require('./controller')
 
-const controller = new WeigenController()
+const controller = new WeigengController()
 
 setTimeout(controller.getStatus, 2000)

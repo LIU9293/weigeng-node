@@ -1,3 +1,3 @@
-const WeigenController = require('./controller')
+const WeigengController = require('./controller')
 
-module.exports = WeigenController
+module.exports = WeigengController

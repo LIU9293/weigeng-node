@@ -1,7 +1,7 @@
 const dgram = require('dgram')
 const { parseData, packData } = require('./utils')
 
-class WeigenController {
+class WeigengController {
   constructor (ip = '255.255.255.255', port = 60000) {
     this.ip = ip
     this.port = port
@@ -93,4 +93,4 @@ class WeigenController {
   }
 }
 
-module.exports = WeigenController
+module.exports = WeigengController
