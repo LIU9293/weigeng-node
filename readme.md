@@ -1,4 +1,4 @@
-## Weigeng NodeJS Client (微耕门禁)
+## Weigeng JavaScript Client (微耕门禁)
 
 ```
 const controller = require('./')
