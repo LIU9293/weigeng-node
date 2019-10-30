@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "lint": "standard --fix"
+  },
+  "dependencies": {
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.27",
+    "socket.io": "^2.3.0",
+    "standard": "^14.3.1"
+  }
+}
