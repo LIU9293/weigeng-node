@@ -148,14 +148,14 @@ function hexStringToDecArray (hexString) {
   return matches.map(function (byteString) { return parseInt(byteString, 16) })
 }
 
-// function decArrayToHexString (decArray) {
-//   var hex = decArray.map(function (d) { return d.toString(16).padStart(2, '0') }).join('')
-//   return hex
-// }
+function decArrayToHexString (decArray) {
+  var hex = decArray.map(function (d) { return d.toString(16).padStart(2, '0') }).join('')
+  return hex
+}
 
-// function ipToHex (ip) {
-//   return decArrayToHexString(ip.split('.').map(function (d) { return +d }))
-// }
+function ipToHex (ip) {
+  return decArrayToHexString(ip.split('.').map(function (d) { return +d }))
+}
 
 function hexToIp (hex) {
   return hexStringToDecArray(hex).join('.')
@@ -163,5 +163,6 @@ function hexToIp (hex) {
 
 module.exports = {
   packData,
-  parseData
+  parseData,
+  ipToHex
 }

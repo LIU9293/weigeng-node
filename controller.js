@@ -2,27 +2,29 @@ const dgram = require('dgram')
 const { parseData, packData } = require('./utils')
 
 class WeigengController {
-  constructor (ip = '255.255.255.255', port = 60000) {
-    this.ip = ip
+  constructor ({ port = 60000, selfPort = 6000 }) {
+    this.originalIp = '255.255.255.255'
+    this.selfPort = selfPort
     this.port = port
+    this.messageQueue = []
 
+    this.socket = this.init.bind(this)
     this.sendData = this.sendData.bind(this)
-    this.initLocalSocket = this.initLocalSocket.bind(this)
+    this.broadcastData = this.broadcastData.bind(this)
     this.search = this.search.bind(this)
     this.getStatus = this.getStatus.bind(this)
     this.openDoor = this.openDoor.bind(this)
     this.getIp = this.getIp.bind(this)
-    this.getDate = this.getDate.bind(this)
 
-    this.initLocalSocket()
+    this.init()
   }
 
-  initLocalSocket () {
+  init () {
     const socket = dgram.createSocket('udp4')
-    this.localSocket = socket
+    this.socket = socket
 
     socket.on('error', err => {
-      console.log(`[UDP] Error:\n${err.stack}.`)
+      console.error(`[WeigengController] Lost UPD connection:\n${err.stack}.`)
       socket.close()
     })
 
@@ -34,62 +36,71 @@ class WeigengController {
       )
 
       if (message.funcName === 'Search') {
-        const { serial, /* ip, */ subNet, gateway, mac } = message
+        const { serial, subNet, gateway, mac } = message
         this.serial = serial
-        // this.ip = ip
+        this.ip = rinfo.address
         this.subNet = subNet
         this.gateway = gateway
         this.mac = mac
       }
+
+      if (message.funcName === 'OpenDoor') {
+        this.messageQueue.push({
+          timestamp: new Date().getTime()
+        })
+      }
     })
 
-    socket.bind(6000)
+    socket.bind(this.selfPort)
     setTimeout(this.search, 1000)
   }
 
   sendData (funcCode, payload) {
-    if (this.ip === '255.255.255.255') {
-      console.log('----')
-      this.localSocket.setBroadcast(true)
-    }
+    this.socket.setBroadcast(false)
     const data = packData(funcCode, payload, this.serial)
 
-    console.log(`Sending local data to ${this.ip}, data length: ${data.byteLength}`)
-    this.localSocket.send(
+    this.socket.send(
       data,
       0,
       data.byteLength,
       this.port,
       this.ip,
       err => {
-        if (err) {
-          console.error(err)
-          if (this.ip === '255.255.255.255') {
-            this.localSocket.setBroadcast(false)
-          }
-        }
+        if (err) console.error(err)
+      }
+    )
+  }
+
+  broadcastData (funcCode, payload) {
+    this.socket.setBroadcast(true)
+    const data = packData(funcCode, payload, this.serial)
+
+    this.socket.send(
+      data,
+      0,
+      data.byteLength,
+      this.port,
+      this.originalIp,
+      err => {
+        if (err) console.error(err)
       }
     )
   }
 
   search () {
-    this.sendData(0x94)
+    this.broadcastData(0x94)
   }
 
   getStatus () {
-    this.sendData(0x20)
+    this.broadcastData(0x20)
   }
 
   getIp () {
-    this.sendData(0x92)
+    this.broadcastData(0x92)
   }
 
-  getDate () {
-    this.sendData(0x32)
-  }
-
-  openDoor () {
-    this.sendData(0x40)
+  openDoor (n) {
+    this.sendData(0x40, n)
   }
 }
 
