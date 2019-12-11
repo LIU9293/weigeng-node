@@ -1,7 +1,15 @@
-## Weigeng JavaScript Client (微耕门禁)
+## Weigeng JavaScript Client (微耕门禁NodeJS客户端)
 
+> Control your weigeng locker with zero dependenies
+
+To disable all console logs, set `process.env.HIDE_WEIGENG_MESSAGE` to true
+
+### Example
 ```
-const controller = require('./')
+const WeigengController = require('weigeng-node')
 
-setTimeout(controller.getStatus, 2000)
+const controller = new WeigengController({})
+
+setTimeout(controller.getStatus, 1000)
+setTimeout(controller.openDoor(1), 2000)
 ```

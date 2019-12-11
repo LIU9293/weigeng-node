@@ -2,6 +2,10 @@ const WeigengController = require('./controller')
 
 const controller = new WeigengController({})
 
-global.cc = controller
+setTimeout(() => {
+  controller.getStatus()
 
-setTimeout(controller.getStatus, 2000)
+  setTimeout(() => {
+    process.exit(0)
+  }, 1000);
+}, 2000)

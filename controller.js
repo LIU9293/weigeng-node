@@ -30,11 +30,14 @@ class WeigengController {
 
     socket.on('message', (msg, rinfo) => {
       const message = parseData(msg)
-      console.log(
-        `[UDP] Got message from ${rinfo.address}:${rinfo.port}.`,
-        JSON.stringify(message)
-      )
 
+      if (!process.env.HIDE_WEIGENG_MESSAGE) {
+        console.log(
+          `[UDP] Got message from ${rinfo.address}:${rinfo.port}.`,
+          JSON.stringify(message)
+        )
+      }
+     
       if (message.funcName === 'Search') {
         const { serial, subNet, gateway, mac } = message
         this.serial = serial
@@ -100,7 +103,7 @@ class WeigengController {
   }
 
   openDoor (n) {
-    this.sendData(0x40, n)
+    this.broadcastData(0x40, n)
   }
 }
 
